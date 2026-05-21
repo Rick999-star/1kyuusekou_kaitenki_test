@@ -1,0 +1,1668 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>初学者向けテスト生成・受験システム</title>
+    <style>
+      :root {
+        --bg: #f4efe4;
+        --panel: #fffaf2;
+        --line: #dfd4c3;
+        --text: #203040;
+        --muted: #617181;
+        --primary: #155d92;
+        --primary-2: #0d7b62;
+        --accent: #c86e38;
+        --ok: #e4f6ee;
+        --ng: #fdecec;
+        --shadow: 0 18px 42px rgba(28, 33, 40, 0.12);
+        --radius-xl: 28px;
+        --radius-lg: 20px;
+        --radius-md: 14px;
+        --radius-sm: 10px;
+        color: var(--text);
+        font-family: "Yu Gothic UI", "BIZ UDPGothic", "Hiragino Sans", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background:
+          radial-gradient(circle at top left, rgba(21, 93, 146, 0.13), transparent 28%),
+          radial-gradient(circle at 85% 15%, rgba(200, 110, 56, 0.14), transparent 22%),
+          linear-gradient(180deg, #f3ecde 0%, #f5f1e8 46%, #efe7d7 100%);
+        color: var(--text);
+      }
+
+      button,
+      input,
+      textarea,
+      select {
+        font: inherit;
+      }
+
+      .app {
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.7fr 1fr;
+        gap: 24px;
+        padding: 28px;
+        border-radius: var(--radius-xl);
+        background: rgba(255, 250, 242, 0.92);
+        box-shadow: var(--shadow);
+        margin-bottom: 24px;
+      }
+
+      .eyebrow {
+        margin: 0;
+        color: var(--primary);
+        font-size: 12px;
+        letter-spacing: 0.22em;
+      }
+
+      h1 {
+        margin: 8px 0 12px;
+        font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+        font-size: clamp(2rem, 3.2vw, 3.3rem);
+        line-height: 1.08;
+      }
+
+      .hero p,
+      .muted,
+      .label,
+      .help,
+      .pill {
+        color: var(--muted);
+      }
+
+      .summary {
+        display: grid;
+        gap: 14px;
+      }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .card,
+      .metric,
+      .question,
+      .exam-card,
+      .banner {
+        background: rgba(255, 250, 242, 0.92);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow);
+      }
+
+      .metric {
+        padding: 18px;
+      }
+
+      .metric strong {
+        display: block;
+        font-size: 30px;
+        color: var(--primary);
+      }
+
+      .view-switch {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.65);
+        border-radius: 999px;
+      }
+
+      .view-switch button,
+      .btn,
+      .btn-soft {
+        border: none;
+        cursor: pointer;
+      }
+
+      .view-switch button {
+        min-height: 48px;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      .view-switch .active {
+        background: linear-gradient(135deg, var(--primary), var(--primary-2));
+        color: white;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1.06fr 1.2fr;
+        gap: 18px;
+      }
+
+      .card {
+        padding: 22px;
+      }
+
+      .section-title {
+        margin: 0 0 14px;
+        font-size: 16px;
+        font-weight: 800;
+      }
+
+      .field {
+        display: grid;
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+
+      .field input,
+      .field textarea,
+      .field select,
+      .answer-input,
+      .answer-textarea,
+      .formula-input {
+        width: 100%;
+        padding: 14px 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        background: rgba(255, 255, 255, 0.85);
+        color: var(--text);
+      }
+
+      .field textarea,
+      .answer-textarea,
+      .formula-input {
+        resize: vertical;
+      }
+
+      .row-2 {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .upload {
+        position: relative;
+        display: grid;
+        place-items: center;
+        min-height: 110px;
+        padding: 16px;
+        border: 2px dashed #bed0df;
+        border-radius: var(--radius-lg);
+        text-align: center;
+        background: rgba(255, 255, 255, 0.55);
+      }
+
+      .upload input {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+      }
+
+      .btn,
+      .btn-soft {
+        min-height: 48px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        font-weight: 700;
+      }
+
+      .btn {
+        background: linear-gradient(135deg, var(--primary), var(--primary-2));
+        color: white;
+      }
+
+      .btn-soft {
+        background: rgba(255, 255, 255, 0.72);
+        color: var(--primary);
+        border: 1px solid #d7e0e9;
+      }
+
+      .stack,
+      .test-list,
+      .question-list,
+      .exam-list,
+      .toolbar {
+        display: grid;
+        gap: 10px;
+      }
+
+      .list-btn,
+      .question-chip {
+        width: 100%;
+        padding: 15px;
+        text-align: left;
+        border: 1px solid transparent;
+        border-radius: var(--radius-md);
+        background: rgba(255, 255, 255, 0.68);
+        cursor: pointer;
+      }
+
+      .selected {
+        border-color: #a9c8df;
+        background: #e8f1fb;
+      }
+
+      .chip-id {
+        font-weight: 800;
+      }
+
+      .chip-text {
+        margin-top: 6px;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .toggle {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 16px;
+        border-radius: var(--radius-md);
+        background: rgba(13, 123, 98, 0.08);
+      }
+
+      .inline {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .wrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .divider {
+        height: 1px;
+        margin: 20px 0;
+        background: var(--line);
+      }
+
+      .password-box,
+      .formula-panel,
+      .preview-box {
+        padding: 16px;
+        border-radius: var(--radius-md);
+        background: rgba(21, 93, 146, 0.05);
+        border: 1px solid #d7e6f2;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.74);
+        font-size: 13px;
+      }
+
+      .question {
+        padding: 22px;
+      }
+
+      .q-head,
+      .exam-head,
+      .submit-row,
+      .banner {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .q-number {
+        width: 44px;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent), #dc9d69);
+        color: white;
+        font-weight: 800;
+      }
+
+      .q-text {
+        margin: 14px 0;
+        font-size: 17px;
+        line-height: 1.8;
+      }
+
+      .choices {
+        display: grid;
+        gap: 10px;
+      }
+
+      .choice {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 15px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        background: rgba(255, 255, 255, 0.78);
+      }
+
+      .choice.active {
+        background: #e8f1fb;
+        border-color: #a9c8df;
+      }
+
+      .result.ok {
+        padding: 16px;
+        border-radius: var(--radius-md);
+        background: var(--ok);
+      }
+
+      .result.ng {
+        padding: 16px;
+        border-radius: var(--radius-md);
+        background: var(--ng);
+      }
+
+      .score {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 22px;
+      }
+
+      .score strong {
+        font-size: 42px;
+        color: var(--primary);
+      }
+
+      .empty,
+      .login-box {
+        display: grid;
+        place-items: center;
+        min-height: 220px;
+        text-align: center;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      .formula-toolbar {
+        display: grid;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+
+      .formula-preview {
+        min-height: 54px;
+        padding: 12px 14px;
+        border-radius: var(--radius-md);
+        background: rgba(255, 255, 255, 0.75);
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+
+      .formula-fallback {
+        font-family: "Consolas", "Courier New", monospace;
+        color: var(--primary);
+      }
+
+      @media (max-width: 1180px) {
+        .hero,
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .app {
+          padding: 16px;
+        }
+
+        .summary-grid,
+        .view-switch,
+        .row-2 {
+          grid-template-columns: 1fr;
+        }
+
+        .inline,
+        .q-head,
+        .exam-head,
+        .banner,
+        .score,
+        .submit-row {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .btn,
+        .btn-soft {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">BEGINNER TEST STUDIO HTML</p>
+          <h1>初学者向けテスト生成・受験システム</h1>
+          <p>
+            単一HTMLで、管理者設定・問題編集・受験・採点まで動く版です。`file://` で直接開くことと、
+            GitHub へそのままアップロードすることの両方を意識しています。
+          </p>
+        </div>
+        <div class="summary">
+          <div class="summary-grid">
+            <div class="metric"><strong id="metric-tests">0</strong><span>テスト</span></div>
+            <div class="metric"><strong id="metric-published">0</strong><span>公開中</span></div>
+            <div class="metric"><strong id="metric-questions">0</strong><span>問題数</span></div>
+          </div>
+          <div class="view-switch">
+            <button id="view-admin" class="active" type="button">管理者画面</button>
+            <button id="view-taker" type="button">受験者画面</button>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section id="admin-login-root"></section>
+        <section id="admin-root"></section>
+        <section id="taker-root"></section>
+      </main>
+    </div>
+
+    <script>
+      const STORAGE_TESTS = "beginner-test-html.tests";
+      const STORAGE_SETTINGS = "beginner-test-html.settings";
+
+      const TYPE_LABELS = {
+        multiple_choice: "選択式",
+        fill_blank: "穴埋め式",
+        written: "記述式",
+        formula: "公式入力"
+      };
+
+      const LEVEL_LABELS = {
+        basic: "やさしい",
+        standard: "ふつう",
+        challenge: "発展"
+      };
+
+      const PRESET_LABELS = {
+        easy: "やさしくする",
+        standard: "標準にする",
+        hard: "やや難しくする"
+      };
+
+      const DEFAULT_SETTINGS = {
+        aiServicePublicUrl: "",
+        defaultDifficultyPreset: "standard",
+        aiScoringPrompt:
+          "重要キーワードの一致を優先し、初学者にも分かる短い説明かどうかを確認して採点してください。",
+        adminPassword: "admin1234"
+      };
+
+      const SAMPLE_TESTS = [
+        {
+          id: "TEST-001",
+          title: "電気回路 入門チェック",
+          description: "電流・電圧・抵抗の基本を短く確認する公開テストです。",
+          published: true,
+          createdAt: "2026-05-20T09:00:00.000Z",
+          referenceSummary: "サンプルJSONから読み込む初期データです。オームの法則と基本用語を中心に出題します。",
+          questions: [
+            {
+              id: "Q001",
+              type: "multiple_choice",
+              difficulty: "basic",
+              topic: "電気回路",
+              question: "電流を表す記号はどれですか。",
+              choices: ["V", "I", "R", "P"],
+              answer: "I",
+              explanation: "電流は I、電圧は V、抵抗は R で表します。",
+              important_terms: ["電流", "I"]
+            },
+            {
+              id: "Q002",
+              type: "fill_blank",
+              difficulty: "basic",
+              topic: "電気回路",
+              question: "電圧・電流・抵抗の関係を表す法則を何といいますか。",
+              answer: "オームの法則",
+              acceptable_answers: ["オームの法則", "おーむのほうそく"],
+              explanation: "V = IR で表される関係をオームの法則といいます。",
+              important_terms: ["オームの法則", "V=IR"]
+            },
+            {
+              id: "Q003",
+              type: "written",
+              difficulty: "standard",
+              topic: "電気回路",
+              question: "抵抗が大きくなると電流はどうなりますか。短く説明してください。",
+              explanation: "電圧が同じなら、抵抗が大きいほど電流は小さくなります。",
+              important_terms: ["抵抗", "電流", "小さくなる"],
+              model_answer: "同じ電圧なら、抵抗が大きいほど流れる電流は小さくなります。",
+              keywords: ["抵抗", "電流", "小さくなる"],
+              scoring: { total: 10, keyword_points: 6, context_points: 4 }
+            },
+            {
+              id: "Q004",
+              type: "formula",
+              difficulty: "basic",
+              topic: "電気回路",
+              question: "オームの法則を LaTeX 形式で入力してください。",
+              explanation: "電圧 V、電流 I、抵抗 R の関係は V = IR です。",
+              important_terms: ["オームの法則", "電圧", "電流", "抵抗"],
+              answer_latex: "V = IR",
+              acceptable_latex: ["V=IR", "V = IR", "V=I R", "V=R I"],
+              symbols: ["V", "I", "R"]
+            }
+          ]
+        },
+        {
+          id: "TEST-002",
+          title: "力学 基礎ドラフト",
+          description: "未公開の下書きデータです。管理者画面で編集する例として使います。",
+          published: false,
+          createdAt: "2026-05-20T10:00:00.000Z",
+          referenceSummary: "速度、加速度、力の関係を扱うサンプルデータです。",
+          questions: [
+            {
+              id: "Q101",
+              type: "multiple_choice",
+              difficulty: "basic",
+              topic: "力学",
+              question: "速度の単位として正しいものはどれですか。",
+              choices: ["m/s", "N", "J", "Pa"],
+              answer: "m/s",
+              explanation: "速度の代表的な単位は m/s です。",
+              important_terms: ["速度", "m/s"]
+            },
+            {
+              id: "Q102",
+              type: "formula",
+              difficulty: "basic",
+              topic: "力学",
+              question: "運動方程式を入力してください。",
+              explanation: "力は質量と加速度の積で表せます。",
+              important_terms: ["力", "質量", "加速度"],
+              answer_latex: "F = ma",
+              acceptable_latex: ["F=ma", "F = ma", "F=m a"],
+              symbols: ["F", "m", "a"]
+            }
+          ]
+        }
+      ];
+
+      const state = {
+        view: "admin",
+        adminAuthed: false,
+        adminMessage: "管理者画面に入るにはパスワードを入力してください。",
+        settingsMessage: "設定変更は自動保存されます。",
+        tests: loadJson(STORAGE_TESTS, SAMPLE_TESTS),
+        settings: loadJson(STORAGE_SETTINGS, DEFAULT_SETTINGS),
+        selectedTestId: null,
+        selectedQuestionId: null,
+        referenceFileName: "",
+        referenceText: "",
+        referenceStatus: "参照ファイルを選ぶと、MVP用のモック問題を生成できます。",
+        activeTestId: null,
+        responses: {},
+        result: null
+      };
+
+      state.selectedTestId = state.tests[0] ? state.tests[0].id : null;
+
+      function loadJson(key, fallback) {
+        try {
+          const raw = localStorage.getItem(key);
+          return raw ? JSON.parse(raw) : deepClone(fallback);
+        } catch (error) {
+          return deepClone(fallback);
+        }
+      }
+
+      function saveState() {
+        localStorage.setItem(STORAGE_TESTS, JSON.stringify(state.tests));
+        localStorage.setItem(STORAGE_SETTINGS, JSON.stringify(state.settings));
+      }
+
+      function deepClone(value) {
+        return JSON.parse(JSON.stringify(value));
+      }
+
+      function createId(prefix) {
+        if (window.crypto && crypto.randomUUID) {
+          return prefix + "-" + crypto.randomUUID().slice(0, 8);
+        }
+        return prefix + "-" + Math.random().toString(36).slice(2, 10);
+      }
+
+      function normalizeText(value) {
+        return String(value || "").normalize("NFKC").trim().toLowerCase().replace(/\s+/g, "");
+      }
+
+      function normalizeLatex(value) {
+        return String(value || "")
+          .normalize("NFKC")
+          .replace(/\\left|\\right/g, "")
+          .replace(/\\times/g, "*")
+          .replace(/\\cdot/g, "*")
+          .replace(/×/g, "*")
+          .replace(/\\div/g, "/")
+          .replace(/÷/g, "/")
+          .replace(/[{}]/g, "")
+          .replace(/\s+/g, "")
+          .trim()
+          .toLowerCase();
+      }
+
+      function splitCsv(value) {
+        return String(value || "")
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean);
+      }
+
+      function splitLines(value) {
+        return String(value || "")
+          .split(/\r?\n/)
+          .map((item) => item.trim())
+          .filter(Boolean);
+      }
+
+      function summarizeText(value, maxLength = 160) {
+        const normalized = String(value || "").replace(/\s+/g, " ").trim();
+        return normalized.length <= maxLength ? normalized : normalized.slice(0, maxLength) + "...";
+      }
+
+      function questionMaxPoints(question) {
+        return question.type === "written" ? question.scoring.total : question.type === "formula" ? 10 : 5;
+      }
+
+      function escapeHtml(value) {
+        return String(value == null ? "" : value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function getSelectedTest() {
+        return state.tests.find((test) => test.id === state.selectedTestId) || state.tests[0] || null;
+      }
+
+      function getSelectedQuestion() {
+        const test = getSelectedTest();
+        if (!test) return null;
+        return test.questions.find((question) => question.id === state.selectedQuestionId) || test.questions[0] || null;
+      }
+
+      function updateMetrics() {
+        document.getElementById("metric-tests").textContent = String(state.tests.length);
+        document.getElementById("metric-published").textContent = String(state.tests.filter((test) => test.published).length);
+        document.getElementById("metric-questions").textContent = String(
+          state.tests.reduce((sum, test) => sum + test.questions.length, 0)
+        );
+      }
+
+      function setView(nextView) {
+        state.view = nextView;
+        document.getElementById("view-admin").classList.toggle("active", nextView === "admin");
+        document.getElementById("view-taker").classList.toggle("active", nextView === "taker");
+        render();
+      }
+
+      function extractTerms(referenceText) {
+        const stopWords = new Set(["です", "ます", "こと", "ため", "よう", "する", "した", "いる", "ある"]);
+        return Array.from(
+          new Set(
+            String(referenceText)
+              .split(/[\s、。,.()\[\]{}「」『』:;!?！？]+/)
+              .map((token) => token.trim())
+              .filter((token) => token.length >= 2 && !stopWords.has(token))
+          )
+        ).slice(0, 8);
+      }
+
+      function detectTopic(referenceText, terms) {
+        if (/電流|電圧|抵抗|オーム/.test(referenceText)) return "電気回路";
+        if (/速度|加速度|質量|運動/.test(referenceText)) return "力学";
+        if (/化学|分子|原子|反応/.test(referenceText)) return "化学基礎";
+        return terms[0] || "基礎学習";
+      }
+
+      function extractFormula(referenceText) {
+        const match = String(referenceText).match(/[A-Za-z]+\s*=\s*[A-Za-z0-9+\-*/ ]+/);
+        return match ? match[0].replace(/\s+/g, " ").trim() : null;
+      }
+
+      function applyDifficultyPreset(questions) {
+        return questions.map((question, index) => {
+          const preset = state.settings.defaultDifficultyPreset;
+          if (preset === "easy") return { ...question, difficulty: "basic" };
+          if (preset === "hard") {
+            return {
+              ...question,
+              difficulty: question.type === "written" || question.type === "formula" ? "challenge" : "standard"
+            };
+          }
+          if (question.difficulty === "basic" && index > 1) {
+            return { ...question, difficulty: "standard" };
+          }
+          return question;
+        });
+      }
+
+      function generateQuestions(referenceText) {
+        const safeText = String(referenceText || "").trim() || "基礎用語の確認資料";
+        const terms = extractTerms(safeText);
+        const topic = detectTopic(safeText, terms);
+        const formula = extractFormula(safeText) || (topic === "力学" ? "F = ma" : "V = IR");
+        let questions;
+
+        if (topic === "電気回路") {
+          questions = [
+            {
+              id: createId("Q"),
+              type: "multiple_choice",
+              difficulty: "basic",
+              topic,
+              question: "電流を表す記号はどれですか。",
+              choices: ["V", "I", "R", "W"],
+              answer: "I",
+              explanation: "電流は I、電圧は V、抵抗は R です。",
+              important_terms: ["電流", "I"]
+            },
+            {
+              id: createId("Q"),
+              type: "fill_blank",
+              difficulty: "basic",
+              topic,
+              question: "電圧・電流・抵抗の関係を表す法則を何といいますか。",
+              answer: "オームの法則",
+              acceptable_answers: ["オームの法則", "おーむのほうそく"],
+              explanation: "電気回路の初学者が最初に覚える基本法則です。",
+              important_terms: ["オームの法則", "V=IR"]
+            },
+            {
+              id: createId("Q"),
+              type: "written",
+              difficulty: "standard",
+              topic,
+              question: "抵抗が大きいと電流がどうなるか、短く説明してください。",
+              explanation: "同じ電圧なら、抵抗が大きいほど電流は小さくなります。",
+              important_terms: ["抵抗", "電流", "小さくなる"],
+              model_answer: "同じ電圧なら、抵抗が大きいほど流れる電流は小さくなります。",
+              keywords: ["抵抗", "電流", "小さくなる"],
+              scoring: { total: 10, keyword_points: 6, context_points: 4 }
+            },
+            {
+              id: createId("Q"),
+              type: "formula",
+              difficulty: "basic",
+              topic,
+              question: "基本公式を LaTeX 形式で入力してください。",
+              explanation: "MVPではモック生成です。後から外部AI APIに置き換えやすい構造にしています。",
+              important_terms: ["電圧", "電流", "抵抗"],
+              answer_latex: formula,
+              acceptable_latex: [formula, formula.replace(/\s+/g, "")],
+              symbols: ["V", "I", "R"]
+            }
+          ];
+        } else if (topic === "力学") {
+          questions = [
+            {
+              id: createId("Q"),
+              type: "multiple_choice",
+              difficulty: "basic",
+              topic,
+              question: "速度の単位として正しいものはどれですか。",
+              choices: ["m/s", "kg", "A", "Pa"],
+              answer: "m/s",
+              explanation: "速度の代表的な単位は m/s です。",
+              important_terms: ["速度", "m/s"]
+            },
+            {
+              id: createId("Q"),
+              type: "fill_blank",
+              difficulty: "basic",
+              topic,
+              question: "力は質量と何の積で表しますか。",
+              answer: "加速度",
+              acceptable_answers: ["加速度"],
+              explanation: "運動方程式 F = ma の a は加速度です。",
+              important_terms: ["力", "質量", "加速度"]
+            },
+            {
+              id: createId("Q"),
+              type: "written",
+              difficulty: "standard",
+              topic,
+              question: "質量が同じとき、力が大きいと加速度はどうなりますか。",
+              explanation: "質量一定なら、力が大きいほど加速度も大きくなります。",
+              important_terms: ["力", "加速度", "大きくなる"],
+              model_answer: "質量が同じなら、力が大きいほど加速度は大きくなります。",
+              keywords: ["力", "加速度", "大きくなる"],
+              scoring: { total: 10, keyword_points: 6, context_points: 4 }
+            },
+            {
+              id: createId("Q"),
+              type: "formula",
+              difficulty: "basic",
+              topic,
+              question: "基本公式を LaTeX 形式で入力してください。",
+              explanation: "MVPではモック生成です。後から外部AI APIに置き換えやすい構造にしています。",
+              important_terms: ["力", "質量", "加速度"],
+              answer_latex: formula,
+              acceptable_latex: [formula, formula.replace(/\s+/g, "")],
+              symbols: ["F", "m", "a"]
+            }
+          ];
+        } else {
+          const mainTerm = terms[0] || topic;
+          const helperTerm = terms[1] || "基本";
+          questions = [
+            {
+              id: createId("Q"),
+              type: "multiple_choice",
+              difficulty: "basic",
+              topic,
+              question: "資料の中心となる語にもっとも近いものはどれですか。",
+              choices: [mainTerm, helperTerm, "例題", "確認事項"],
+              answer: mainTerm,
+              explanation: "MVPのモック生成では抽出語をもとに選択肢を作成します。",
+              important_terms: [mainTerm, helperTerm]
+            },
+            {
+              id: createId("Q"),
+              type: "fill_blank",
+              difficulty: "basic",
+              topic,
+              question: "この資料の主なテーマは何ですか。",
+              answer: mainTerm,
+              acceptable_answers: [mainTerm, topic],
+              explanation: "抽出した重要語をもとにした仮問題です。",
+              important_terms: [mainTerm]
+            },
+            {
+              id: createId("Q"),
+              type: "written",
+              difficulty: "standard",
+              topic,
+              question: mainTerm + " を初学者向けに一文で説明してください。",
+              explanation: mainTerm + " と " + helperTerm + " に触れられると高得点になります。",
+              important_terms: [mainTerm, helperTerm],
+              model_answer: mainTerm + " は資料の中心となる基本概念で、" + helperTerm + " とあわせて理解すると学びやすくなります。",
+              keywords: [mainTerm, helperTerm],
+              scoring: { total: 10, keyword_points: 6, context_points: 4 }
+            },
+            {
+              id: createId("Q"),
+              type: "formula",
+              difficulty: "basic",
+              topic,
+              question: "MVPのモック公式を入力してください。",
+              explanation: "外部AI API接続後は資料本文から公式候補を抽出する想定です。",
+              important_terms: [mainTerm, helperTerm],
+              answer_latex: "a = b + c",
+              acceptable_latex: ["a = b + c", "a=b+c"],
+              symbols: ["a", "b", "c"]
+            }
+          ];
+        }
+
+        return {
+          id: createId("TEST"),
+          title: topic + " 自動生成テスト",
+          description: "参照ファイルから生成したMVPドラフトです。",
+          published: false,
+          createdAt: new Date().toISOString(),
+          referenceSummary: summarizeText(safeText),
+          questions: applyDifficultyPreset(questions)
+        };
+      }
+
+      function scoreQuestion(question, userAnswer) {
+        if (question.type === "multiple_choice") {
+          const isCorrect = normalizeText(userAnswer) === normalizeText(question.answer);
+          return {
+            questionId: question.id,
+            earnedPoints: isCorrect ? questionMaxPoints(question) : 0,
+            maxPoints: questionMaxPoints(question),
+            isCorrect,
+            feedback: isCorrect ? "正解です。" : "不正解です。",
+            expectedAnswer: question.answer,
+            userAnswer
+          };
+        }
+
+        if (question.type === "fill_blank") {
+          const accepts = [question.answer].concat(question.acceptable_answers).map(normalizeText);
+          const isCorrect = accepts.includes(normalizeText(userAnswer));
+          return {
+            questionId: question.id,
+            earnedPoints: isCorrect ? questionMaxPoints(question) : 0,
+            maxPoints: questionMaxPoints(question),
+            isCorrect,
+            feedback: isCorrect ? "正解です。" : "不正解です。",
+            expectedAnswer: question.answer,
+            userAnswer
+          };
+        }
+
+        if (question.type === "formula") {
+          const accepts = [question.answer_latex].concat(question.acceptable_latex).map(normalizeLatex);
+          const isCorrect = accepts.includes(normalizeLatex(userAnswer));
+          return {
+            questionId: question.id,
+            earnedPoints: isCorrect ? questionMaxPoints(question) : 0,
+            maxPoints: questionMaxPoints(question),
+            isCorrect,
+            feedback: isCorrect ? "公式を正しく入力できています。" : "不正解です。",
+            expectedAnswer: question.answer_latex,
+            userAnswer
+          };
+        }
+
+        const matched = question.keywords.filter((keyword) =>
+          normalizeText(userAnswer).includes(normalizeText(keyword))
+        );
+        const keywordRatio = question.keywords.length ? matched.length / question.keywords.length : 0;
+        const keywordPoints = Math.round(question.scoring.keyword_points * keywordRatio);
+        const contextRatio = userAnswer.trim().length >= 25 ? 0.5 : userAnswer.trim() ? 0.25 : 0;
+        const contextPoints = Math.round(
+          question.scoring.context_points * Math.min(1, keywordRatio + contextRatio)
+        );
+        const earned = Math.min(question.scoring.total, keywordPoints + contextPoints);
+        return {
+          questionId: question.id,
+          earnedPoints: earned,
+          maxPoints: question.scoring.total,
+          isCorrect: earned >= Math.ceil(question.scoring.total * 0.6),
+          feedback: matched.length
+            ? "仮採点です。キーワード一致: " + matched.join("、")
+            : "仮採点です。重要キーワードが少ないため加点が伸びていません。",
+          expectedAnswer: question.model_answer,
+          userAnswer
+        };
+      }
+
+      function gradeTest(test, responses) {
+        const breakdowns = test.questions.map((question) =>
+          scoreQuestion(question, responses[question.id] || "")
+        );
+        const totalPoints = breakdowns.reduce((sum, item) => sum + item.earnedPoints, 0);
+        const maxPoints = breakdowns.reduce((sum, item) => sum + item.maxPoints, 0);
+        return {
+          percentage: maxPoints ? Math.round((totalPoints / maxPoints) * 100) : 0,
+          totalPoints,
+          maxPoints,
+          breakdowns
+        };
+      }
+
+      function emptyQuestionByType(type) {
+        const base = {
+          id: createId("Q"),
+          type,
+          difficulty: "basic",
+          topic: "新しいトピック",
+          question: "",
+          explanation: "",
+          important_terms: []
+        };
+        if (type === "multiple_choice") return { ...base, choices: ["", "", "", ""], answer: "" };
+        if (type === "fill_blank") return { ...base, answer: "", acceptable_answers: [] };
+        if (type === "written") {
+          return {
+            ...base,
+            model_answer: "",
+            keywords: [],
+            scoring: { total: 10, keyword_points: 6, context_points: 4 }
+          };
+        }
+        return { ...base, answer_latex: "", acceptable_latex: [], symbols: [] };
+      }
+
+      function renderFormula(value) {
+        return '<span class="formula-fallback">' + escapeHtml(value || "ここに数式プレビューが表示されます") + "</span>";
+      }
+
+      function render() {
+        updateMetrics();
+        renderAdminLogin();
+        renderAdmin();
+        renderTaker();
+      }
+
+      function renderAdminLogin() {
+        const root = document.getElementById("admin-login-root");
+        if (state.view !== "admin" || state.adminAuthed) {
+          root.innerHTML = "";
+          return;
+        }
+
+        root.innerHTML = `
+          <div class="login-box">
+            <div class="card" style="max-width:560px; width:100%;">
+              <h2 class="section-title">管理者ログイン</h2>
+              <p class="help">管理者パスワードを知っている人だけが、公開URLやAI採点設定を変更できます。</p>
+              <label class="field">
+                <span class="label">管理者パスワード</span>
+                <input id="admin-login-password" type="password" />
+              </label>
+              <button id="admin-login-button" class="btn" type="button">ログイン</button>
+              <p class="help">${escapeHtml(state.adminMessage)}</p>
+              <p class="help">初期パスワードは <code>admin1234</code> です。</p>
+            </div>
+          </div>
+        `;
+
+        document.getElementById("admin-login-button").onclick = () => {
+          const value = document.getElementById("admin-login-password").value;
+          if (value === state.settings.adminPassword) {
+            state.adminAuthed = true;
+            state.adminMessage = "管理者画面にログインしました。";
+          } else {
+            state.adminMessage = "パスワードが違います。";
+          }
+          render();
+        };
+      }
+
+      function renderAdmin() {
+        const root = document.getElementById("admin-root");
+        if (state.view !== "admin" || !state.adminAuthed) {
+          root.innerHTML = "";
+          return;
+        }
+
+        const test = getSelectedTest();
+        const question = getSelectedQuestion();
+
+        root.innerHTML = `
+          <div class="grid">
+            <section class="card">
+              <h2 class="section-title">管理者設定</h2>
+              <label class="field">
+                <span class="label">外部AI連携の公開URL</span>
+                <input id="setting-public-url" value="${escapeHtml(state.settings.aiServicePublicUrl)}" placeholder="https://your-public-endpoint.example.com/api" />
+              </label>
+              <p class="help">APIキーはこのHTML内に保存せず、外部の公開用サイトや中継APIだけで保持する想定です。</p>
+              <label class="field">
+                <span class="label">問題レベルの初期設定</span>
+                <select id="setting-difficulty">
+                  ${Object.entries(PRESET_LABELS).map(([value, label]) => `<option value="${value}" ${state.settings.defaultDifficultyPreset === value ? "selected" : ""}>${label}</option>`).join("")}
+                </select>
+              </label>
+              <label class="field">
+                <span class="label">AI採点の詳細プロンプト</span>
+                <textarea id="setting-prompt" rows="6">${escapeHtml(state.settings.aiScoringPrompt)}</textarea>
+              </label>
+              <div class="password-box">
+                <h3 class="section-title">管理者パスワード再設定</h3>
+                <label class="field"><span class="label">現在のパスワード</span><input id="current-password" type="password" /></label>
+                <label class="field"><span class="label">新しいパスワード</span><input id="new-password" type="password" /></label>
+                <label class="field"><span class="label">新しいパスワード確認</span><input id="confirm-password" type="password" /></label>
+                <button id="save-password" class="btn-soft" type="button">パスワードを更新</button>
+              </div>
+              <p class="help" id="settings-help">${escapeHtml(state.settingsMessage)}</p>
+              <div class="divider"></div>
+              <h3 class="section-title">参照ファイルアップロード</h3>
+              <label class="upload">
+                <input id="reference-file" type="file" accept=".txt,.md,.csv,.json,.tex,.pdf,.doc,.docx" />
+                <span>${escapeHtml(state.referenceFileName || "ファイルを選択")}</span>
+              </label>
+              <button id="generate-questions" class="btn" type="button">問題生成</button>
+              <p class="help">${escapeHtml(state.referenceStatus)}</p>
+              <div class="divider"></div>
+              <h3 class="section-title">テスト一覧</h3>
+              <div class="test-list">
+                ${state.tests.map((item) => `
+                  <button type="button" class="list-btn ${item.id === state.selectedTestId ? "selected" : ""}" data-test-id="${item.id}">
+                    <strong>${escapeHtml(item.title)}</strong><br />
+                    <span class="muted">${item.published ? "公開中" : "下書き"}</span>
+                  </button>
+                `).join("")}
+              </div>
+              <button id="export-json" class="btn-soft" type="button">JSONを書き出す</button>
+            </section>
+            <section class="card">
+              ${test ? renderAdminTestSettings(test) : '<div class="empty">テストがありません。</div>'}
+            </section>
+            <section class="card">
+              ${question ? renderQuestionEditor(question) : '<div class="empty">編集する問題を選んでください。</div>'}
+            </section>
+          </div>
+        `;
+
+        bindAdminEvents();
+      }
+
+      function renderAdminTestSettings(test) {
+        const question = getSelectedQuestion();
+        return `
+          <h2 class="section-title">テスト設定</h2>
+          <label class="field"><span class="label">タイトル</span><input id="test-title" value="${escapeHtml(test.title)}" /></label>
+          <label class="field"><span class="label">説明</span><textarea id="test-description" rows="3">${escapeHtml(test.description)}</textarea></label>
+          <label class="field"><span class="label">参照メモ</span><textarea id="test-reference" rows="3">${escapeHtml(test.referenceSummary)}</textarea></label>
+          <label class="toggle"><input id="test-published" type="checkbox" ${test.published ? "checked" : ""} /><span>受験者に公開する</span></label>
+          <div class="divider"></div>
+          <div class="inline">
+            <h3 class="section-title" style="margin:0;">問題一覧</h3>
+            <div class="wrap">
+              <button class="btn-soft" type="button" data-add-type="multiple_choice">選択式を追加</button>
+              <button class="btn-soft" type="button" data-add-type="fill_blank">穴埋めを追加</button>
+              <button class="btn-soft" type="button" data-add-type="written">記述式を追加</button>
+              <button class="btn-soft" type="button" data-add-type="formula">公式入力を追加</button>
+            </div>
+          </div>
+          <div class="question-list">
+            ${test.questions.map((item) => `
+              <button type="button" class="question-chip ${question && item.id === question.id ? "selected" : ""}" data-question-id="${item.id}">
+                <div class="chip-id">${escapeHtml(item.id)}</div>
+                <div class="muted">${TYPE_LABELS[item.type]} / ${LEVEL_LABELS[item.difficulty]}</div>
+                <div class="chip-text">${escapeHtml(item.question || "問題文を入力してください")}</div>
+              </button>
+            `).join("")}
+          </div>
+        `;
+      }
+
+      function renderQuestionEditor(question) {
+        const common = `
+          <h2 class="section-title">問題編集</h2>
+          <label class="field"><span class="label">問題文</span><textarea id="q-question" rows="3">${escapeHtml(question.question)}</textarea></label>
+          <div class="row-2">
+            <label class="field"><span class="label">トピック</span><input id="q-topic" value="${escapeHtml(question.topic)}" /></label>
+            <label class="field">
+              <span class="label">難易度</span>
+              <select id="q-difficulty">
+                <option value="basic" ${question.difficulty === "basic" ? "selected" : ""}>basic</option>
+                <option value="standard" ${question.difficulty === "standard" ? "selected" : ""}>standard</option>
+                <option value="challenge" ${question.difficulty === "challenge" ? "selected" : ""}>challenge</option>
+              </select>
+            </label>
+          </div>
+          <label class="field"><span class="label">解説</span><textarea id="q-explanation" rows="3">${escapeHtml(question.explanation)}</textarea></label>
+          <label class="field"><span class="label">重要語句（カンマ区切り）</span><input id="q-important" value="${escapeHtml((question.important_terms || []).join(", "))}" /></label>
+        `;
+
+        if (question.type === "multiple_choice") {
+          return common + `
+            <label class="field"><span class="label">選択肢（1行1つ）</span><textarea id="q-choices" rows="5">${escapeHtml(question.choices.join("\n"))}</textarea></label>
+            <label class="field"><span class="label">正解</span><input id="q-answer" value="${escapeHtml(question.answer)}" /></label>
+          `;
+        }
+
+        if (question.type === "fill_blank") {
+          return common + `
+            <label class="field"><span class="label">代表解答</span><input id="q-answer" value="${escapeHtml(question.answer)}" /></label>
+            <label class="field"><span class="label">許容解答（1行1つ）</span><textarea id="q-acceptable" rows="4">${escapeHtml(question.acceptable_answers.join("\n"))}</textarea></label>
+          `;
+        }
+
+        if (question.type === "written") {
+          return common + `
+            <label class="field"><span class="label">模範解答</span><textarea id="q-model-answer" rows="4">${escapeHtml(question.model_answer)}</textarea></label>
+            <label class="field"><span class="label">採点キーワード（カンマ区切り）</span><input id="q-keywords" value="${escapeHtml(question.keywords.join(", "))}" /></label>
+            <div class="row-2">
+              <label class="field"><span class="label">合計点</span><input id="q-total" type="number" value="${question.scoring.total}" /></label>
+              <label class="field"><span class="label">キーワード点</span><input id="q-keyword-points" type="number" value="${question.scoring.keyword_points}" /></label>
+            </div>
+            <label class="field"><span class="label">文脈点</span><input id="q-context-points" type="number" value="${question.scoring.context_points}" /></label>
+          `;
+        }
+
+        return common + `
+          <label class="field"><span class="label">正解 LaTeX</span><input id="q-answer-latex" value="${escapeHtml(question.answer_latex)}" /></label>
+          <label class="field"><span class="label">許容 LaTeX（1行1つ）</span><textarea id="q-acceptable-latex" rows="4">${escapeHtml(question.acceptable_latex.join("\n"))}</textarea></label>
+          <label class="field"><span class="label">使用記号（カンマ区切り）</span><input id="q-symbols" value="${escapeHtml(question.symbols.join(", "))}" /></label>
+          <div class="preview-box"><div class="label">数式プレビュー</div><div>${renderFormula(question.answer_latex)}</div></div>
+        `;
+      }
+
+      function bindAdminEvents() {
+        document.getElementById("setting-public-url").oninput = (event) => {
+          state.settings.aiServicePublicUrl = event.target.value;
+          saveState();
+        };
+        document.getElementById("setting-difficulty").onchange = (event) => {
+          state.settings.defaultDifficultyPreset = event.target.value;
+          saveState();
+        };
+        document.getElementById("setting-prompt").oninput = (event) => {
+          state.settings.aiScoringPrompt = event.target.value;
+          saveState();
+        };
+        document.getElementById("save-password").onclick = () => {
+          const current = document.getElementById("current-password").value;
+          const next = document.getElementById("new-password").value;
+          const confirm = document.getElementById("confirm-password").value;
+          if (current !== state.settings.adminPassword) {
+            state.settingsMessage = "現在の管理者パスワードが一致しません。";
+          } else if (!next.trim()) {
+            state.settingsMessage = "新しいパスワードを入力してください。";
+          } else if (next !== confirm) {
+            state.settingsMessage = "新しいパスワード確認が一致しません。";
+          } else {
+            state.settings.adminPassword = next;
+            state.settingsMessage = "管理者パスワードを更新しました。";
+            saveState();
+          }
+          render();
+        };
+        document.getElementById("reference-file").onchange = async (event) => {
+          const file = event.target.files[0];
+          if (!file) return;
+          state.referenceFileName = file.name;
+          if (file.type.startsWith("text/") || /\.(txt|md|csv|json|tex)$/i.test(file.name)) {
+            state.referenceText = await file.text();
+            state.referenceStatus = file.name + " の本文を読み込みました。";
+          } else {
+            state.referenceText =
+              "参照ファイル名: " + file.name + "\nMVPではこの形式の本文抽出は未実装です。";
+            state.referenceStatus = file.name + " は本文抽出未対応のため、ファイル名ベースのモック生成を行います。";
+          }
+          render();
+        };
+        document.getElementById("generate-questions").onclick = () => {
+          if (!state.referenceFileName) {
+            state.referenceStatus = "先に参照ファイルを選んでください。";
+            render();
+            return;
+          }
+          const draft = generateQuestions(state.referenceText);
+          draft.id = createId("TEST");
+          draft.title = state.referenceFileName.replace(/\.[^.]+$/, "") + " テスト";
+          state.tests.unshift(draft);
+          state.selectedTestId = draft.id;
+          state.selectedQuestionId = draft.questions[0] ? draft.questions[0].id : null;
+          state.referenceStatus =
+            state.referenceFileName +
+            " から " +
+            draft.questions.length +
+            " 問を生成しました。難易度設定は「" +
+            PRESET_LABELS[state.settings.defaultDifficultyPreset] +
+            "」です。";
+          saveState();
+          render();
+        };
+        document.getElementById("export-json").onclick = () => {
+          const blob = new Blob([JSON.stringify({ tests: state.tests, settings: state.settings }, null, 2)], {
+            type: "application/json"
+          });
+          const url = URL.createObjectURL(blob);
+          const anchor = document.createElement("a");
+          anchor.href = url;
+          anchor.download = "tests.json";
+          anchor.click();
+          URL.revokeObjectURL(url);
+        };
+
+        document.querySelectorAll("[data-test-id]").forEach((button) => {
+          button.onclick = () => {
+            state.selectedTestId = button.dataset.testId;
+            state.selectedQuestionId = null;
+            render();
+          };
+        });
+
+        const test = getSelectedTest();
+        const question = getSelectedQuestion();
+        if (!test) return;
+
+        document.getElementById("test-title").oninput = (event) => {
+          test.title = event.target.value;
+          saveState();
+        };
+        document.getElementById("test-description").oninput = (event) => {
+          test.description = event.target.value;
+          saveState();
+        };
+        document.getElementById("test-reference").oninput = (event) => {
+          test.referenceSummary = event.target.value;
+          saveState();
+        };
+        document.getElementById("test-published").onchange = (event) => {
+          test.published = event.target.checked;
+          saveState();
+          render();
+        };
+        document.querySelectorAll("[data-add-type]").forEach((button) => {
+          button.onclick = () => {
+            const nextQuestion = emptyQuestionByType(button.dataset.addType);
+            test.questions.push(nextQuestion);
+            state.selectedQuestionId = nextQuestion.id;
+            saveState();
+            render();
+          };
+        });
+        document.querySelectorAll("[data-question-id]").forEach((button) => {
+          button.onclick = () => {
+            state.selectedQuestionId = button.dataset.questionId;
+            render();
+          };
+        });
+
+        if (!question) return;
+        bindQuestionEditor(question);
+      }
+
+      function bindQuestionEditor(question) {
+        const saveAndRender = () => {
+          saveState();
+          render();
+        };
+
+        const bind = (id, fn, eventName = "input") => {
+          const element = document.getElementById(id);
+          if (element) element["on" + eventName] = fn;
+        };
+
+        bind("q-question", (event) => {
+          question.question = event.target.value;
+          saveAndRender();
+        });
+        bind("q-topic", (event) => {
+          question.topic = event.target.value;
+          saveAndRender();
+        });
+        bind("q-difficulty", (event) => {
+          question.difficulty = event.target.value;
+          saveAndRender();
+        }, "change");
+        bind("q-explanation", (event) => {
+          question.explanation = event.target.value;
+          saveAndRender();
+        });
+        bind("q-important", (event) => {
+          question.important_terms = splitCsv(event.target.value);
+          saveAndRender();
+        });
+
+        if (question.type === "multiple_choice") {
+          bind("q-choices", (event) => {
+            question.choices = splitLines(event.target.value);
+            saveAndRender();
+          });
+          bind("q-answer", (event) => {
+            question.answer = event.target.value;
+            saveAndRender();
+          });
+        } else if (question.type === "fill_blank") {
+          bind("q-answer", (event) => {
+            question.answer = event.target.value;
+            saveAndRender();
+          });
+          bind("q-acceptable", (event) => {
+            question.acceptable_answers = splitLines(event.target.value);
+            saveAndRender();
+          });
+        } else if (question.type === "written") {
+          bind("q-model-answer", (event) => {
+            question.model_answer = event.target.value;
+            saveAndRender();
+          });
+          bind("q-keywords", (event) => {
+            question.keywords = splitCsv(event.target.value);
+            saveAndRender();
+          });
+          bind("q-total", (event) => {
+            question.scoring.total = Number(event.target.value);
+            saveAndRender();
+          });
+          bind("q-keyword-points", (event) => {
+            question.scoring.keyword_points = Number(event.target.value);
+            saveAndRender();
+          });
+          bind("q-context-points", (event) => {
+            question.scoring.context_points = Number(event.target.value);
+            saveAndRender();
+          });
+        } else if (question.type === "formula") {
+          bind("q-answer-latex", (event) => {
+            question.answer_latex = event.target.value;
+            saveAndRender();
+          });
+          bind("q-acceptable-latex", (event) => {
+            question.acceptable_latex = splitLines(event.target.value);
+            saveAndRender();
+          });
+          bind("q-symbols", (event) => {
+            question.symbols = splitCsv(event.target.value);
+            saveAndRender();
+          });
+        }
+      }
+
+      function renderTaker() {
+        const root = document.getElementById("taker-root");
+        if (state.view !== "taker") {
+          root.innerHTML = "";
+          return;
+        }
+
+        const publishedTests = state.tests.filter((test) => test.published);
+        const activeTest = publishedTests.find((test) => test.id === state.activeTestId) || null;
+
+        if (!activeTest) {
+          root.innerHTML = publishedTests.length
+            ? `<div class="exam-list">${publishedTests.map((test) => `
+                <article class="exam-card card">
+                  <div class="exam-head">
+                    <div><h2 class="section-title">${escapeHtml(test.title)}</h2><p class="muted">${escapeHtml(test.description)}</p></div>
+                    <button class="btn" type="button" data-start-test="${test.id}">テスト開始</button>
+                  </div>
+                  <div class="wrap">
+                    <span class="pill">${test.questions.length} 問</span>
+                    <span class="pill">${escapeHtml(test.referenceSummary)}</span>
+                  </div>
+                </article>
+              `).join("")}</div>`
+            : `<div class="empty"><div class="card" style="padding:30px;">公開中のテストはまだありません。管理者画面で公開設定をオンにしてください。</div></div>`;
+
+          document.querySelectorAll("[data-start-test]").forEach((button) => {
+            button.onclick = () => {
+              const test = publishedTests.find((item) => item.id === button.dataset.startTest);
+              state.activeTestId = test.id;
+              state.responses = Object.fromEntries(test.questions.map((question) => [question.id, ""]));
+              state.result = null;
+              render();
+            };
+          });
+          return;
+        }
+
+        root.innerHTML = `
+          <div class="stack">
+            <div class="banner card">
+              <div><h2 class="section-title" style="margin:0 0 8px;">${escapeHtml(activeTest.title)}</h2><p class="muted">${escapeHtml(activeTest.description)}</p></div>
+              <button id="back-to-tests" class="btn-soft" type="button">一覧へ戻る</button>
+            </div>
+            <div class="wrap">
+              <span class="pill">${activeTest.questions.length}問を順番に回答します。</span>
+              <span class="pill">${state.result ? "採点済み" : "未提出"}</span>
+            </div>
+            ${activeTest.questions.map((question, index) => renderQuestion(question, index)).join("")}
+            ${
+              state.result
+                ? `<div class="score card"><div><strong>${state.result.percentage}%</strong><div>${state.result.totalPoints} / ${state.result.maxPoints} 点</div></div><button id="retry-test" class="btn" type="button">もう一度解く</button></div>`
+                : `<div class="submit-row"><button id="submit-test" class="btn" type="button">提出して採点</button></div>`
+            }
+          </div>
+        `;
+
+        document.getElementById("back-to-tests").onclick = () => {
+          state.activeTestId = null;
+          render();
+        };
+
+        if (state.result) {
+          document.getElementById("retry-test").onclick = () => {
+            state.responses = Object.fromEntries(activeTest.questions.map((question) => [question.id, ""]));
+            state.result = null;
+            render();
+          };
+        } else {
+          document.getElementById("submit-test").onclick = () => {
+            state.result = gradeTest(activeTest, state.responses);
+            render();
+          };
+        }
+
+        bindExamInputs(activeTest);
+      }
+
+      function renderQuestion(question, index) {
+        const breakdown = state.result
+          ? state.result.breakdowns.find((item) => item.questionId === question.id)
+          : null;
+
+        return `
+          <article class="question">
+            <div class="q-head">
+              <div class="inline" style="justify-content:flex-start;">
+                <div class="q-number">Q${index + 1}</div>
+                <div class="wrap">
+                  <span class="pill">${TYPE_LABELS[question.type]}</span>
+                  <span class="pill">${LEVEL_LABELS[question.difficulty]}</span>
+                  <span class="pill">${escapeHtml(question.topic)}</span>
+                </div>
+              </div>
+            </div>
+            <div class="q-text">${escapeHtml(question.question)}</div>
+            ${renderAnswerInput(question)}
+            ${question.type === "formula" ? `<div class="help">ギリシャ文字、分数、指数、下付き、平方根ボタンを使えます。</div>` : ""}
+            ${
+              breakdown
+                ? `<div class="result ${breakdown.isCorrect ? "ok" : "ng"}">
+                    <div><strong>${breakdown.earnedPoints} / ${breakdown.maxPoints} 点</strong></div>
+                    <p>${escapeHtml(breakdown.feedback)}</p>
+                    <p>あなたの回答: ${escapeHtml(breakdown.userAnswer || "未入力")}</p>
+                    <p>正解例: ${escapeHtml(breakdown.expectedAnswer)}</p>
+                    <p>解説: ${escapeHtml(question.explanation)}</p>
+                  </div>`
+                : ""
+            }
+          </article>
+        `;
+      }
+
+      function renderAnswerInput(question) {
+        const value = state.responses[question.id] || "";
+
+        if (question.type === "multiple_choice") {
+          return `<div class="choices">${question.choices.map((choice) => `
+            <label class="choice ${value === choice ? "active" : ""}">
+              <input type="radio" name="${question.id}" value="${escapeHtml(choice)}" ${value === choice ? "checked" : ""} />
+              <span>${escapeHtml(choice)}</span>
+            </label>
+          `).join("")}</div>`;
+        }
+
+        if (question.type === "fill_blank") {
+          return `<input class="answer-input" data-answer-id="${question.id}" value="${escapeHtml(value)}" placeholder="答えを入力" />`;
+        }
+
+        if (question.type === "written") {
+          return `<textarea class="answer-textarea" data-answer-id="${question.id}" rows="5" placeholder="短く説明してください">${escapeHtml(value)}</textarea>`;
+        }
+
+        return `
+          <div class="formula-panel">
+            <div class="formula-toolbar">
+              <div>
+                <div class="label" style="margin-bottom:8px;">ギリシャ文字</div>
+                <div class="wrap">
+                  ${[
+                    ["α", "\\alpha"], ["β", "\\beta"], ["γ", "\\gamma"], ["Δ", "\\Delta"], ["θ", "\\theta"],
+                    ["λ", "\\lambda"], ["μ", "\\mu"], ["ρ", "\\rho"], ["σ", "\\sigma"], ["ω", "\\omega"]
+                  ].map(([label, insert]) => `<button class="btn-soft" type="button" data-insert="${escapeHtml(insert)}" data-target="${question.id}">${label}</button>`).join("")}
+                </div>
+              </div>
+              <div>
+                <div class="label" style="margin-bottom:8px;">構造</div>
+                <div class="wrap">
+                  <button class="btn-soft" type="button" data-insert="\\frac{}{}" data-offset="-3" data-target="${question.id}">分数</button>
+                  <button class="btn-soft" type="button" data-insert="^{}" data-offset="-1" data-target="${question.id}">指数</button>
+                  <button class="btn-soft" type="button" data-insert="_{}" data-offset="-1" data-target="${question.id}">下付き</button>
+                  <button class="btn-soft" type="button" data-insert="\\sqrt{}" data-offset="-1" data-target="${question.id}">平方根</button>
+                </div>
+              </div>
+              <div>
+                <div class="label" style="margin-bottom:8px;">基本記号</div>
+                <div class="wrap">
+                  ${["+", "-", "\\times", "\\div", "=", "(", ")"].map((item) => `<button class="btn-soft" type="button" data-insert="${escapeHtml(item)}" data-target="${question.id}">${escapeHtml(item)}</button>`).join("")}
+                </div>
+              </div>
+            </div>
+            <textarea class="formula-input" data-answer-id="${question.id}" rows="4" placeholder="例: V = IR または \\frac{V}{R}">${escapeHtml(value)}</textarea>
+            <div class="preview-box">
+              <div class="label">プレビュー</div>
+              <div id="formula-preview-${question.id}" class="formula-preview">${renderFormula(value)}</div>
+            </div>
+          </div>
+        `;
+      }
+
+      function bindExamInputs(activeTest) {
+        document.querySelectorAll('input[type="radio"]').forEach((element) => {
+          element.onchange = () => {
+            state.responses[element.name] = element.value;
+            render();
+          };
+        });
+
+        document.querySelectorAll("[data-answer-id]").forEach((element) => {
+          element.oninput = (event) => {
+            const questionId = event.target.dataset.answerId;
+            state.responses[questionId] = event.target.value;
+            const preview = document.getElementById("formula-preview-" + questionId);
+            if (preview) preview.innerHTML = renderFormula(event.target.value);
+          };
+        });
+
+        document.querySelectorAll("[data-insert]").forEach((button) => {
+          button.onclick = () => {
+            const targetId = button.dataset.target;
+            const textarea = document.querySelector(`textarea[data-answer-id="${targetId}"]`);
+            if (!textarea) return;
+            const insert = button.dataset.insert;
+            const offset = Number(button.dataset.offset || 0);
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const nextValue = textarea.value.slice(0, start) + insert + textarea.value.slice(end);
+            textarea.value = nextValue;
+            state.responses[targetId] = nextValue;
+            const nextPos = start + insert.length + offset;
+            textarea.focus();
+            textarea.setSelectionRange(nextPos, nextPos);
+            const preview = document.getElementById("formula-preview-" + targetId);
+            if (preview) preview.innerHTML = renderFormula(nextValue);
+          };
+        });
+      }
+
+      document.getElementById("view-admin").onclick = () => setView("admin");
+      document.getElementById("view-taker").onclick = () => setView("taker");
+
+      render();
+    </script>
+  </body>
+</html>
